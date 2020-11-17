@@ -1,5 +1,7 @@
 package com.audiolib.persistance.service;
 
+import java.util.List;
+
 import com.audiolib.persistance.model.Artist;
 import com.audiolib.persistance.repository.ArtistRepo;
 
@@ -17,5 +19,9 @@ public class ArtistService {
 
     public Iterable<Artist> findAll() {
         return artistRepo.findAll();
+    }
+
+    public List<Artist> findByName(String name) {
+        return artistRepo.findByName(name);
     }
 }
