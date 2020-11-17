@@ -14,4 +14,8 @@ public class ArtistService {
     public Artist findArtistById(Long id) {
         return artistRepo.findArtistById(id);
     }
+
+    public Iterable<Artist> findAll() {
+        return artistRepo.findAll();
+    }
 }

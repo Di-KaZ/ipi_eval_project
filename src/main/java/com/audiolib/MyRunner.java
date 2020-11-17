@@ -1,4 +1,8 @@
 package com.audiolib;
+import java.util.Set;
+
+import com.audiolib.persistance.model.Album;
+import com.audiolib.persistance.model.Artist;
 import com.audiolib.persistance.service.ArtistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,7 +16,15 @@ public class MyRunner implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        print(artistService.findArtistById(1L).getName());
+        Iterable<Artist> artists = artistService.findAll();
+
+        for (Artist artist : artists) {
+            Set<Album> albums = artist.getAlbums();
+            print(artist.getName());
+            for (Album album : albums) {
+                print(album.getTitle());
+            }
+        }
     }
 
     public static void print(Object t) {
