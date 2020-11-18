@@ -10,11 +10,12 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 
+
 @Repository
 public interface ArtistRepo extends PagingAndSortingRepository<Artist, Long> {
     Artist findArtistById(Long id);
-
-    List<Artist> findByNameIgnoreCase(String name);
+    Page<Artist> findAll(Pageable page);
     Page<Artist> findByNameIgnoreCase(String name, Pageable page);
+    List<Artist> findByNameIgnoreCase(String name);
 }
 

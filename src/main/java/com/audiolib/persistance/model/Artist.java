@@ -2,6 +2,7 @@ package com.audiolib.persistance.model;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 public class Artist {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ArtistId")
     private Long id;
 
@@ -23,7 +24,7 @@ public class Artist {
     private String name;
 
     @JsonIgnoreProperties("artist")
-    @OneToMany(mappedBy = "artist", fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "artist", fetch=FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<Album> albums;
 
     public Long getId() {

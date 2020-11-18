@@ -1,8 +1,5 @@
 package com.audiolib;
-import java.util.Set;
 
-import com.audiolib.persistance.model.Album;
-import com.audiolib.persistance.model.Artist;
 import com.audiolib.persistance.service.ArtistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

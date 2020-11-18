@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Album {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="AlbumId")
     private Long id;
 
@@ -18,7 +18,7 @@ public class Album {
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "ArtistId", nullable=false)
+    @JoinColumn(name = "ArtistId", nullable = false)
     Artist artist;
 
     public Long getId() {
