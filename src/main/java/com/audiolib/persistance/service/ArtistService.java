@@ -1,6 +1,7 @@
 package com.audiolib.persistance.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.audiolib.persistance.model.Artist;
 import com.audiolib.persistance.repository.ArtistRepo;
@@ -15,7 +16,7 @@ public class ArtistService {
     @Autowired
     private ArtistRepo artistRepo;
 
-    public Artist findArtistById(Long id) {
+    public Optional<Artist> findArtistById(Long id) {
         return artistRepo.findArtistById(id);
     }
 
@@ -39,15 +40,19 @@ public class ArtistService {
     }
 
     public Artist update(Long id, Artist artist) {
-        Artist toModify = artistRepo.findArtistById(id);
-        if (toModify == null)
-            return toModify;
-        toModify.setName(artist.getName());
-        toModify.setAlbums(artist.getAlbums());
-        return artistRepo.save(toModify);
+        Optional<Artist> toModify = artistRepo.findArtistById(id);
+        if (!toModify.isPresent())
+            return null;
+        toModify.get().setName(artist.getName());
+        toModify.get().setAlbums(artist.getAlbums());
+        return artistRepo.save(toModify.get());
     }
 
     public void delete(Long id) {
-        artistRepo.delete(artistRepo.findArtistById(id));
+        Optional<Artist> toDelete = artistRepo.findArtistById(id);
+
+        if (toDelete.isPresent())
+            return;
+        artistRepo.delete(toDelete.get());
     }
 }

@@ -1,6 +1,7 @@
 package com.audiolib.controllers;
 
 import java.net.URI;
+import java.util.Optional;
 
 import com.audiolib.persistance.model.Artist;
 import com.audiolib.persistance.service.ArtistService;
@@ -23,7 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 @RestController
-@CrossOrigin // Utiliser pour ce passer du SimpleCorsFilter
+@CrossOrigin // Utilisé pour ce passer du SimpleCorsFilter
 @RequestMapping(value = "/artists")
 public class artistController {
 
@@ -49,11 +50,11 @@ public class artistController {
 
     @RequestMapping(method = RequestMethod.GET, value="/{id}")
     public ResponseEntity<Artist> getArtistById(@PathVariable("id") Long id) {
-        Artist artist = artistService.findArtistById(id);
-        if (artist == null) {
+        Optional<Artist> artist = artistService.findArtistById(id);
+        if (!artist.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(artist);
+        return ResponseEntity.ok(artist.get());
     }
 
     @RequestMapping(method = RequestMethod.PUT, value="/{id}", consumes = "application/json", produces = "application/json")
