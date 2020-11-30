@@ -39,7 +39,7 @@ public class artistController {
                                     @RequestParam(value = "name", required = false) String name) {
 
         Pageable page = PageRequest.of(page_num.intValue(), size.intValue(),
-                        Sort.by(sortDirection.equals("ASC") ?
+                        Sort.by(sortDirection.equalsIgnoreCase("ASC") ?
                         Order.asc(sortProperty) : Order.desc(sortProperty)));
 
         if (name == null) {
