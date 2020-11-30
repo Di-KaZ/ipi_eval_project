@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface ArtistRepo extends PagingAndSortingRepository<Artist, Long> {
     Optional<Artist> findArtistById(Long id);
     Page<Artist> findAll(Pageable page);
-    Page<Artist> findByNameIgnoreCase(String name, Pageable page);
-    List<Artist> findByNameIgnoreCase(String name);
+    Page<Artist> findByNameContainingIgnoreCase(String name, Pageable page);
+    List<Artist> findByNameContainingIgnoreCase(String name);
 }
 

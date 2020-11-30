@@ -21,11 +21,11 @@ public class ArtistService {
     }
 
     public Page<Artist> findByNameIgnoreCase(String name, Pageable page) {
-        return artistRepo.findByNameIgnoreCase(name, page);
+        return artistRepo.findByNameContainingIgnoreCase(name, page);
     }
 
-    public List<Artist> findByNameIgnoreCase(String name) {
-        return artistRepo.findByNameIgnoreCase(name);
+    public List<Artist> findByNameContainingIgnoreCase(String name) {
+        return artistRepo.findByNameContainingIgnoreCase(name);
     }
 
     public Page<Artist> findAll(Pageable page) {
@@ -33,7 +33,7 @@ public class ArtistService {
     }
 
     public Artist create(Artist artist) {
-        if (!artistRepo.findByNameIgnoreCase(artist.getName()).isEmpty()) {
+        if (!artistRepo.findByNameContainingIgnoreCase(artist.getName()).isEmpty()) {
             return null;
         }
         return artistRepo.save(artist);

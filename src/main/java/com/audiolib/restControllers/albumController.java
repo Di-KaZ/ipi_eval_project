@@ -1,4 +1,4 @@
-package com.audiolib.controllers;
+package com.audiolib.restControllers;
 
 import com.audiolib.persistance.model.Album;
 import com.audiolib.persistance.service.AlbumService;

@@ -1,4 +1,4 @@
-package com.audiolib.controllers;
+package com.audiolib.restControllers;
 
 import java.net.URI;
 import java.util.Optional;
