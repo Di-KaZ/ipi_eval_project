@@ -2,6 +2,7 @@ package com.audiolib.controllers;
 
 import java.util.Optional;
 
+import com.audiolib.persistance.model.Album;
 import com.audiolib.persistance.model.Artist;
 import com.audiolib.persistance.service.AlbumService;
 import com.audiolib.persistance.service.ArtistService;
@@ -50,21 +51,14 @@ public class ThymeleafController {
 
     @RequestMapping(value = "artists", method = RequestMethod.GET)
     public String showAllPage(@RequestParam("page") Integer page_num,
-                                    @RequestParam("size") Integer size,
-                                    @RequestParam("sortProperty") String sortProperty,
-                                    @RequestParam("sortDirection") String sortDirection,
-                                    @RequestParam(value = "name", required = false) String name,
-                                    final ModelMap model) {
-        Page<Artist> page;
+                              @RequestParam("size") Integer size,
+                              @RequestParam("sortProperty") String sortProperty,
+                              @RequestParam("sortDirection") String sortDirection,
+                              final ModelMap model) {
         Pageable pageable = PageRequest.of(page_num.intValue(), size.intValue(),
-                        Sort.by(sortDirection.equalsIgnoreCase("ASC") ?
-                        Order.asc(sortProperty) : Order.desc(sortProperty)));
-
-        if (name == null) {
-            page = artistService.findAll(pageable);
-        } else {
-            page = artistService.findByNameIgnoreCase(name, pageable);
-        }
+                            Sort.by(sortDirection.equalsIgnoreCase("ASC") ?
+                            Order.asc(sortProperty) : Order.desc(sortProperty)));
+        Page<Artist> page = artistService.findAll(pageable);
 
         model.put("artists", page);
         model.put("size", size);
@@ -76,8 +70,6 @@ public class ThymeleafController {
         size * page_num /* Index elem 0 de la page */,
         size * (page_num + 1) /* Index dernier element de la page */,
         page.getTotalPages() - 1));
-
-
         return "listeArtists";
     }
 
@@ -88,10 +80,9 @@ public class ThymeleafController {
      */
     @RequestMapping(value = "artists", method = RequestMethod.POST, params = "name")
     public String showAllPage(@RequestParam(value = "name") String name, final ModelMap model) {
-        Page<Artist> page;
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Order.asc("name")));
+        Page<Artist> page = artistService.findByNameIgnoreCase(name, pageable);
 
-        page = artistService.findByNameIgnoreCase(name, pageable);
         model.put("artists", page);
         model.put("size", 10);
         model.put("pageNum", 0);
@@ -104,19 +95,44 @@ public class ThymeleafController {
         page.getTotalPages() - 1));
         return "listeArtists";
     }
+
+    @RequestMapping(value="artists/delete/{id}", method = RequestMethod.GET)
+    public RedirectView deleteArtist(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            albumService.delete(id);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("Failure", "La supression n'a pas réussi !");
+            // redirection sur l'artiste d'ou vien l'album
+            new RedirectView("/thymeleaf/artists?page=0&size=10&sortProperty=name&sortDirection=ASC)");
+
+        }
+        redirectAttributes.addFlashAttribute("Success", "La supression a réussi !");
+        // redirection sur l'artiste d'ou vien l'album
+        return new RedirectView("/thymeleaf/artists?page=0&size=10&sortProperty=name&sortDirection=ASC)");
+    }
     //  ==================  FIN ARTIST  ==================
 
     //  ==================  ALBUMS  ==================
     @RequestMapping(value="artists/albums/delete/{id}", method = RequestMethod.GET)
     public RedirectView deleteAlbum(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        Optional<Album> album = albumService.findById(id);
+
+        if (album.isEmpty()) {
+            redirectAttributes.addFlashAttribute("message", "L'album n'existe pas !");
+            // redirection sur l'artiste d'ou vien l'album
+            return new RedirectView("/thymeleaf/artists/" + album.get().getArtist().getId().toString());
+        }
         try {
             albumService.delete(id);
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("Failure", "La supression n'a pas réussi !");
-            return new RedirectView("/thymeleaf");
+            redirectAttributes.addFlashAttribute("message", "La supression n'a pas réussi !");
+            // redirection sur l'artiste d'ou vien l'album
+            new RedirectView("/thymeleaf/artists/" + album.get().getArtist().getId().toString());
+
         }
-        redirectAttributes.addFlashAttribute("Success", "La supression a réussi !");
-        return new RedirectView("/thymeleaf");
+        redirectAttributes.addFlashAttribute("message", "La supression a réussi !");
+        // redirection sur l'artiste d'ou vien l'album
+        return new RedirectView("/thymeleaf/artists/" + album.get().getArtist().getId().toString());
     }
     //  ==================  FIN ALBUMS  ==================
 }

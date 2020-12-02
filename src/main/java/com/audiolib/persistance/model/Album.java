@@ -14,7 +14,7 @@ public class Album {
     @Column(name="AlbumId")
     private Long id;
 
-    @Column(name = "Title")
+    @Column(name = "Title", nullable = false) // nullable permet de gerer les erreur si le title est vide
     private String title;
 
     @ManyToOne

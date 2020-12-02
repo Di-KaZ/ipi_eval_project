@@ -20,7 +20,7 @@ public class Artist {
     @Column(name="ArtistId")
     private Long id;
 
-    @Column(name = "Name")
+    @Column(name = "Name", nullable = false) // nullable permet de gerer les erreur si le title est vide
     private String name;
 
     @JsonIgnoreProperties("artist")
