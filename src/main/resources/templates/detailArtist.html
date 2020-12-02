@@ -18,70 +18,47 @@
     />
   </head>
   <body class="ember-application">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#message">
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-toggle="modal"
+      data-target="#message"
+    >
       Launch demo modal
     </button>
 
-    <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="messageLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="message"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="messageLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="messageLabel">Message</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body" th:text="${message}">
-            Default
-          </div>
+          <div class="modal-body" th:text="${message}">Default</div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">
+              OK
+            </button>
           </div>
         </div>
       </div>
     </div>
     <div>
-      <nav class="navbar navbar-default">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button
-              type="button"
-              data-toggle="collapse"
-              data-target="#bs-example-navbar-collapse-1"
-              class="navbar-toggle collapsed"
-            >
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a href="#">Librairie Audio</a>
-          </div>
-
-          <div
-            id="bs-example-navbar-collapse-1"
-            class="collapse navbar-collapse"
-          >
-            <ul class="nav navbar-nav">
-              <li class="active">
-                <a href="#" class="nav-link ember-view">Liste des artistes</a>
-              </li>
-            </ul>
-
-            <form role="search" class="navbar-form navbar-right">
-              <div class="form-group">
-                <input
-                  type="text"
-                  placeholder="Rechercher par nom"
-                  class="ember-text-field form-control ember-view"
-                />
-              </div>
-              <button type="submit" class="btn btn-default">Rechercher</button>
-            </form>
-          </div>
-        </div>
-      </nav>
-
+      <div class="container" th:replace="navbar :: navbar"></div>
       <div class="container">
         <h2 th:text="${artist.name}">Whaaat ?!</h2>
 
@@ -95,52 +72,60 @@
                 class="ember-text-field form-control ember-view"
                 th:value="${artist.name}"
               />
+              <div style="height: 20px"></div>
 
               <label for="performance" class="form-control-label">Albums</label>
-              <div class="row" th:each="album : ${artist.albums}">
-                <div class="col-lg-10">
-                  <div class="list-group">
-                    <li class="list-group-item" th:text="${album.title}">
-                      &nbsp;Let There Be Rock
-                    </li>
+              <div
+                class="row"
+                th:each="album : ${artist.albums}"
+                style="padding-bottom: 20px"
+              >
+                <form id="saveForm" th:action="'artists/save/'" method="post">
+                  <div class="col-lg-10">
+                    <input class="form-control" th:value="${album.title}" />
                   </div>
-                </div>
-                <div class="col-lg-2 text-center">
-                  <div class="list-group text-center">
-                      <a
-                        th:id="${album.id}"
-                        type="submit"
-                        class="btn-danger list-group-item list-group-item-action"
-                        th:href="@{'albums/delete/' + ${album.id}}"
-                      >
-                        <span class="glyphicon glyphicon-remove"></span>
-                      </a>
-                    </form>
+                  <div class="col-lg-1">
+                    <button disabled="" class="btn btn-primary">
+                      Enregistrer
+                    </button>
                   </div>
-                </div>
+                  <div class="col-lg-1">
+                    <button
+                      th:id="${album.id}"
+                      type="submit"
+                      class="btn btn-danger"
+                      th:action="'albums/delete/' + ${album.id}"
+                    >
+                      <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                  </div>
+                </form>
               </div>
+              <div style="height: 20px"></div>
               <div class="row">
-                <div class="col-lg-10">
-                  <input
-                    type="text"
-                    placeholder="Ajouter un album..."
-                    class="form-control ember-text-field ember-view"
-                  />
-                </div>
-                <div class="col-lg-2 text-center">
-                  <button
-                    class="btn-success list-group-item list-group-item-action"
-                  >
-                    <span class="glyphicon glyphicon-plus"></span>
-                  </button>
-                </div>
+                <form
+                  id="createForm"
+                  th:action="'artists/album/save/'"
+                  method="post"
+                >
+                  <div class="col-lg-10">
+                    <input class="form-control" placeholder="Nouvel album ?" />
+                  </div>
+                  <div class="col-lg-1">
+                    <button disabled="" class="btn btn-success">Ajouter</button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
         </div>
         <div class="row">
           <button disabled="" class="btn btn-primary">Enregistrer</button>
-          <a class="btn btn-danger" th:href="@{/thymeleaf/artists/delete/{id}(id=${artist.id})}">Supprimer</a>
+          <a
+            class="btn btn-danger"
+            th:href="@{/thymeleaf/artists/delete/{id}(id=${artist.id})}"
+            >Supprimer</a
+          >
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -110,6 +111,14 @@ public class ThymeleafController {
         // redirection sur l'artiste d'ou vien l'album
         return new RedirectView("/thymeleaf/artists?page=0&size=10&sortProperty=name&sortDirection=ASC)");
     }
+
+    @RequestMapping(value = "artists/save/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public RedirectView createSaveAlbum(Artist artist, final ModelMap model) {
+        artist = artistService.create(artist);
+        model.put("artist", artist);
+        return new RedirectView("artists/albums/" + artist.getId().toString());
+    }
+
     //  ==================  FIN ARTIST  ==================
 
     //  ==================  ALBUMS  ==================
@@ -133,6 +142,13 @@ public class ThymeleafController {
         redirectAttributes.addFlashAttribute("message", "La supression a réussi !");
         // redirection sur l'artiste d'ou vien l'album
         return new RedirectView("/thymeleaf/artists/" + album.get().getArtist().getId().toString());
+    }
+
+    @RequestMapping(value = "artists/albums/save/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public RedirectView createSaveAlbum(Album album, final ModelMap model) {
+        album = albumService.create(album);
+        model.put("album", album);
+        return new RedirectView("artists/albums/" + album.getId().toString());
     }
     //  ==================  FIN ALBUMS  ==================
 }
