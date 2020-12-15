@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.audiolib.persistance.model.Artist;
+import com.audiolib.persistance.model.ArtistDTO;
 import com.audiolib.persistance.repository.ArtistRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class ArtistService {
     @Autowired
     private ArtistRepo artistRepo;
 
-    public Optional<Artist> findArtistById(Long id) {
+    public Optional<Artist> findById(Long id) {
         return artistRepo.findArtistById(id);
     }
 
@@ -33,26 +34,52 @@ public class ArtistService {
     }
 
     public Artist create(Artist artist) {
-        if (!artistRepo.findByNameContainingIgnoreCase(artist.getName()).isEmpty()) {
+        if (!artist.getName().isEmpty() || artistRepo.findByNameIgnoreCase(artist.getName()).isPresent()) {
             return null;
         }
         return artistRepo.save(artist);
     }
 
-    public Artist update(Long id, Artist artist) {
-        Optional<Artist> toModify = artistRepo.findArtistById(id);
-        if (!toModify.isPresent())
+    public Artist create(ArtistDTO artistDTO) {
+        // vertif si un artiste avec ce nom n'existe pas deja ou si le nom est vide
+        if (artistDTO.getName().isEmpty() || artistRepo.findByNameIgnoreCase(artistDTO.getName()).isPresent()) {
             return null;
-        toModify.get().setName(artist.getName());
-        toModify.get().setAlbums(artist.getAlbums());
-        return artistRepo.save(toModify.get());
+        }
+        // nouvel artiste
+        if (artistDTO.getId() == null) {
+            Artist artist = new Artist();
+            artist.setName(artistDTO.getName());
+            return artist;
+        } else { // on update un artiste existant
+            Optional<Artist> artist = artistRepo.findById(artistDTO.getId());
+            if (artist.isPresent()) {
+                artist.get().setName(artistDTO.getName());
+                artistRepo.save(artist.get());
+                return artist.get();
+            }
+        }
+        return null;
+    }
+
+    public Artist update(Artist artist) {
+        if (artist != null) {
+            Optional<Artist> toModify = artistRepo.findArtistById(artist.getId());
+            if (!toModify.isPresent())
+                return null;
+            toModify.get().setName(artist.getName());
+            toModify.get().setAlbums(artist.getAlbums());
+            return artistRepo.save(toModify.get());
+        }
+        return null;
     }
 
     public void delete(Long id) {
-        Optional<Artist> toDelete = artistRepo.findArtistById(id);
+        artistRepo.deleteById(id);
+    }
 
-        if (toDelete.isPresent())
-            return;
-        artistRepo.delete(toDelete.get());
+    public void delete(Artist artist) {
+        if (artist != null) {
+            artistRepo.delete(artist);
+        }
     }
 }

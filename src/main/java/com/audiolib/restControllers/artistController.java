@@ -14,10 +14,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,14 +34,14 @@ public class artistController {
     @Autowired
     private ArtistService artistService;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public Page<Artist> showAllPage(@RequestParam("page") Integer page_num,
+    @GetMapping
+    public Page<Artist> showAllPage(@RequestParam("page") Integer pageNum,
                                     @RequestParam("size") Integer size,
                                     @RequestParam("sortProperty") String sortProperty,
                                     @RequestParam("sortDirection") String sortDirection,
                                     @RequestParam(value = "name", required = false) String name) {
 
-        Pageable page = PageRequest.of(page_num.intValue(), size.intValue(),
+        Pageable page = PageRequest.of(pageNum.intValue(), size.intValue(),
                         Sort.by(sortDirection.equalsIgnoreCase("ASC") ?
                         Order.asc(sortProperty) : Order.desc(sortProperty)));
 
@@ -48,18 +51,18 @@ public class artistController {
         return artistService.findByNameIgnoreCase(name, page);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value="/{id}")
+    @GetMapping(value="/{id}")
     public ResponseEntity<Artist> getArtistById(@PathVariable("id") Long id) {
-        Optional<Artist> artist = artistService.findArtistById(id);
+        Optional<Artist> artist = artistService.findById(id);
         if (!artist.isPresent()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(artist.get());
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value="/{id}", consumes = "application/json", produces = "application/json")
+    @PutMapping(value="/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Artist> modifyArtistById(@PathVariable("id") Long id, @RequestBody Artist artist) {
-        Artist modifiedArtist = artistService.update(id, artist);
+        Artist modifiedArtist = artistService.update(artist);
 
         if (modifiedArtist == null) {
             return ResponseEntity.notFound().build();
@@ -67,7 +70,7 @@ public class artistController {
         return ResponseEntity.ok(modifiedArtist);
     }
 
-    @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<Artist> createArtist(@RequestBody Artist artist) {
         Artist createdArtist = artistService.create(artist);
 
@@ -75,12 +78,12 @@ public class artistController {
             return ResponseEntity.notFound().build();
         } else {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/?name={name}").buildAndExpand(createdArtist.getName()).toUri();
+            .path("/?id={id}").buildAndExpand(createdArtist.getId()).toUri();
             return ResponseEntity.created(uri).body(createdArtist);
         }
     }
 
-    @RequestMapping(method=RequestMethod.DELETE, value="/{id}")
+    @DeleteMapping(value="/{id}")
     public ResponseEntity<Artist> deleteArtist(@PathVariable("id") Long id) {
         try {
             artistService.delete(id);
