@@ -39,23 +39,24 @@ public class ThymeleafArtistsController {
         return "accueil";
     }
 
-    @GetMapping(value = "artists", params = { "page", "size", "sortProperty", "sortDirection" })
-    public String showAllPage(@RequestParam("page") Integer pageNum, @RequestParam("size") Integer size,
+    @GetMapping(value = "artists")
+    public String showAllPage(@RequestParam(value = "name", required = false) String name,
+            @RequestParam("page") Integer pageNum, @RequestParam("size") Integer size,
             @RequestParam("sortProperty") String sortProperty, @RequestParam("sortDirection") String sortDirection,
             final ModelMap model) {
         Pageable pageable = PageRequest.of(pageNum.intValue(), size.intValue(),
                 Sort.by(sortDirection.equalsIgnoreCase("ASC") ? Order.asc(sortProperty) : Order.desc(sortProperty)));
-        Page<Artist> page = artistService.findAll(pageable);
+        Page<Artist> page = artistService.findAll(pageable, name);
         model.put("artists", page);
         model.put("size", size);
         model.put("pageNum", pageNum);
         model.put("sortDirection", sortDirection);
         model.put("sortProperty", sortProperty);
-        model.put("pageTot", page.getTotalPages());
+        model.put("pageTot", page.getTotalPages() + 1);
         model.put("sizep",
                 String.format("Affichage des artistes %d à %d sur un total de %d",
-                        size * pageNum /* Index elem 0 de la page */,
-                        size * (pageNum + 1) /* Index dernier element de la page */, page.getTotalPages() - 1));
+                        pageNum == 0 ? 1 : size * pageNum/* Index elem 0 de la page */,
+                        size * (pageNum + 1) /* Index dernier element de la page */, page.getTotalPages()));
         return "listeArtists";
     }
 
@@ -68,30 +69,6 @@ public class ThymeleafArtistsController {
             model.put("artist", artist.get());
         }
         return "detailArtist";
-    }
-
-    /**
-     * <h3>Cherche un artiste avec le nom contenant la chaine 'name' dans la
-     * database</h3>
-     *
-     * @param name
-     * @return
-     */
-    @RequestMapping(value = "artists", params = { "name", "page", "size", "sortProperty",
-            "sortDirection" }, method = RequestMethod.GET)
-    public String showAllPageByName(@RequestParam(value = "name") String name, final ModelMap model) {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Order.asc("name")));
-        Page<Artist> page = artistService.findByNameIgnoreCase(name, pageable);
-
-        model.put("artists", page);
-        model.put("size", 10);
-        model.put("pageNum", 0);
-        model.put("sortDirection", "ASC");
-        model.put("sortProperty", "name");
-        model.put("pageTot", page.getTotalPages());
-        model.put("sizep", String.format("Affichage des artistes %d à %d sur un total de %d",
-                0 /* Index elem 0 de la page */, 10 /* Index dernier element de la page */, page.getTotalPages() - 1));
-        return "listeArtists";
     }
 
     @DeleteMapping(value = "artists/delete")
@@ -110,7 +87,7 @@ public class ThymeleafArtistsController {
         return new RedirectView("/thymeleaf/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
     }
 
-    @PostMapping(value = "artists")
+    @PostMapping(value = "add_artists")
     public RedirectView createSaveArtist(ArtistDTO artistDTO, final ModelMap model) {
         Artist artist = artistService.create(artistDTO);
         if (artist == null) {
@@ -118,6 +95,6 @@ public class ThymeleafArtistsController {
             return new RedirectView("/thymeleaf/artists/" + artistDTO.getId().toString());
         }
         model.put("artist", artist);
-        return new RedirectView("/thymeleaf/artists/" + artistDTO.getId().toString());
+        return new RedirectView("/thymeleaf/artists/" + artist.getId().toString());
     }
 }

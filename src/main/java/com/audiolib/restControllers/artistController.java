@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
 @RestController
 @CrossOrigin // Utilisé pour ce passer du SimpleCorsFilter
 @RequestMapping(value = "/artists")
@@ -35,23 +34,17 @@ public class artistController {
     private ArtistService artistService;
 
     @GetMapping
-    public Page<Artist> showAllPage(@RequestParam("page") Integer pageNum,
-                                    @RequestParam("size") Integer size,
-                                    @RequestParam("sortProperty") String sortProperty,
-                                    @RequestParam("sortDirection") String sortDirection,
-                                    @RequestParam(value = "name", required = false) String name) {
+    public Page<Artist> showAllPage(@RequestParam("page") Integer pageNum, @RequestParam("size") Integer size,
+            @RequestParam("sortProperty") String sortProperty, @RequestParam("sortDirection") String sortDirection,
+            @RequestParam(value = "name", required = false) String name) {
 
         Pageable page = PageRequest.of(pageNum.intValue(), size.intValue(),
-                        Sort.by(sortDirection.equalsIgnoreCase("ASC") ?
-                        Order.asc(sortProperty) : Order.desc(sortProperty)));
+                Sort.by(sortDirection.equalsIgnoreCase("ASC") ? Order.asc(sortProperty) : Order.desc(sortProperty)));
 
-        if (name == null) {
-            return artistService.findAll(page);
-        }
-        return artistService.findByNameIgnoreCase(name, page);
+        return artistService.findAll(page, name);
     }
 
-    @GetMapping(value="/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<Artist> getArtistById(@PathVariable("id") Long id) {
         Optional<Artist> artist = artistService.findById(id);
         if (!artist.isPresent()) {
@@ -60,7 +53,7 @@ public class artistController {
         return ResponseEntity.ok(artist.get());
     }
 
-    @PutMapping(value="/{id}", consumes = "application/json", produces = "application/json")
+    @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Artist> modifyArtistById(@PathVariable("id") Long id, @RequestBody Artist artist) {
         Artist modifiedArtist = artistService.update(artist);
 
@@ -77,13 +70,13 @@ public class artistController {
         if (createdArtist == null) {
             return ResponseEntity.notFound().build();
         } else {
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/?id={id}").buildAndExpand(createdArtist.getId()).toUri();
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/?id={id}")
+                    .buildAndExpand(createdArtist.getId()).toUri();
             return ResponseEntity.created(uri).body(createdArtist);
         }
     }
 
-    @DeleteMapping(value="/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<Artist> deleteArtist(@PathVariable("id") Long id) {
         try {
             artistService.delete(id);

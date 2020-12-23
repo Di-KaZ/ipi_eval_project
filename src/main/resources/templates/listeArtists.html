@@ -20,9 +20,30 @@
 
       <div class="container">
         <div class="row">
-          <div class="col-lg-6">
+          <div class="col-lg-12">
             <h1>Liste des artistes</h1>
-            <a href="#" class="btn btn-primary">Nouvel artiste</a>
+            <form th:action="@{'/thymeleaf/add_artists/'}" th:method="post">
+              <div class="row">
+                <div class="col-lg-10">
+                  <input type="hidden" th:value="*{id}" name="id" />
+                  <input
+                    class="ember-text-field form-control ember-view"
+                    type="text"
+                    name="name"
+                    placeholder="nom du nouvel artiste"
+                  />
+                </div>
+                <div class="col-lg">
+                  <button
+                    type="submit"
+                    href="#"
+                    class="btn btn-primary col-lg-2"
+                  >
+                    Nouvel artiste
+                  </button>
+                </div>
+              </div>
+            </form>
             <table class="table table-hover table-striped">
               <thead>
                 <tr>
@@ -45,31 +66,37 @@
               </tbody>
             </table>
             <div class="row">
-              <div class="col-lg-6">
+              <div class="col-lg-5">
                 <p th:text="${sizep}"></p>
               </div>
-              <div class="col-lg-6">
+              <div class="col-lg-5">
                 <ul class="pagination">
                   <li
-                    th:classappend="${artists.hasPrevious()} ? none : disabled"
+                    th:style="${artists.hasPrevious()} ? '' : 'filter: grayscale(1)'"
                   >
                     <a
                       href="#"
                       th:with="pagePrev=${pageNum} - 1"
+                      th:style="${artists.hasPrevious()} ? '' : 'cursor: default'"
                       th:href="${artists.hasPrevious()} ? @{artists(page=${pagePrev},size=${size},(sortProperty=${sortProperty}),sortDirection=${sortDirection})} : '#'"
-                      >«</a
+                      >⬅️</a
                     >
                   </li>
                   <li>
-                    <a href="#">Page <span th:text="${pageNum}"></span></a>
+                    <a href="#" style="cursor: default"
+                      >Page <span th:text="${pageNum + 1}"></span
+                    ></a>
                   </li>
-                  <li th:classappend="${artists.hasNext()} ? none : disabled">
+                  <li
+                    th:style="${artists.hasNext()} ? '' : 'filter: grayscale(1)'"
+                  >
                     <a
                       href="#"
+                      th:style="${artists.hasNext()} ? '' : 'cursor: default'"
                       th:with="pageNext=${pageNum} + 1"
                       th:href="${artists.hasNext()} ? @{artists(page=${pageNext},size=${size},(sortProperty=${sortProperty}),sortDirection=${sortDirection})} : '#'"
                     >
-                      »
+                      ➡️
                     </a>
                   </li>
                 </ul>

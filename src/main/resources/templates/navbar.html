@@ -38,6 +38,10 @@
             th:action="@{/thymeleaf/artists}"
           >
             <div class="form-group">
+              <input type="hidden" th:value="0" name="page" />
+              <input type="hidden" th:value="10" name="size" />
+              <input type="hidden" th:value="name" name="sortProperty" />
+              <input type="hidden" th:value="ASC" name="sortDirection" />
               <input
                 type="text"
                 placeholder="Rechercher par nom"

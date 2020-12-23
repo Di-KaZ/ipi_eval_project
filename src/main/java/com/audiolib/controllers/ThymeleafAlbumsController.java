@@ -13,12 +13,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-@RequestMapping(value = "/thymeleaf", method = RequestMethod.GET)
+@RequestMapping(value = "/thymeleaf")
 public class ThymeleafAlbumsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ThymeleafAlbumsController.class);
 
@@ -39,14 +38,12 @@ public class ThymeleafAlbumsController {
                     String.format("La supression de l'album '%s' n'a pas réussi !", albumDTO.getTitle()));
             // redirection sur l'artiste d'ou vien l'album
             new RedirectView("" + albumDTO.getArtistId().toString());
-
         }
         redirectAttributes.addFlashAttribute("message",
                 String.format("La supression de l'album '%s' a réussi !", albumDTO.getTitle()));
         // redirection sur l'artiste d'ou vien l'album
         return new RedirectView("/thymeleaf/artists/" + albumDTO.getArtistId().toString());
     }
-
     @PostMapping(value = "albums", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RedirectView createSaveAlbum(AlbumDTO albumDTO, final ModelMap model) {
         Album album;

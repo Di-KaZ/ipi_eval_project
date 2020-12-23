@@ -1,6 +1,5 @@
 package com.audiolib.persistance.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.audiolib.persistance.model.Artist;
@@ -21,16 +20,12 @@ public class ArtistService {
         return artistRepo.findArtistById(id);
     }
 
-    public Page<Artist> findByNameIgnoreCase(String name, Pageable page) {
+    public Page<Artist> findAll(Pageable page, String name) {
+        // si name est definit fait la recherche sinon affiche tout
+        if (name == null) {
+            return artistRepo.findAll(page);
+        }
         return artistRepo.findByNameContainingIgnoreCase(name, page);
-    }
-
-    public List<Artist> findByNameContainingIgnoreCase(String name) {
-        return artistRepo.findByNameContainingIgnoreCase(name);
-    }
-
-    public Page<Artist> findAll(Pageable page) {
-        return artistRepo.findAll(page);
     }
 
     public Artist create(Artist artist) {
@@ -49,6 +44,7 @@ public class ArtistService {
         if (artistDTO.getId() == null) {
             Artist artist = new Artist();
             artist.setName(artistDTO.getName());
+            artistRepo.save(artist);
             return artist;
         } else { // on update un artiste existant
             Optional<Artist> artist = artistRepo.findById(artistDTO.getId());
