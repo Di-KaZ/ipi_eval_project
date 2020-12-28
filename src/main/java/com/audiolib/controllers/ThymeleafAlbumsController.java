@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,15 +43,17 @@ public class ThymeleafAlbumsController {
         // redirection sur l'artiste d'ou vien l'album
         return new RedirectView("/thymeleaf/artists/" + albumDTO.getArtistId().toString());
     }
+
     @PostMapping(value = "albums", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public RedirectView createSaveAlbum(AlbumDTO albumDTO, final ModelMap model) {
+    public RedirectView createSaveAlbum(AlbumDTO albumDTO, RedirectAttributes redirectAttributes) {
         Album album;
         LOGGER.info("Album DTO recup POST : {}", albumDTO);
         album = albumService.create(albumDTO);
         if (album == null) {
-            model.put("message", "une erreur est survenu lors de la modification ou la creation de l'album");
+            redirectAttributes.addFlashAttribute("message",
+                    "une erreur est survenu lors de la modification ou la creation de l'album");
         }
-        model.put("album", album);
+        redirectAttributes.addFlashAttribute("message", "Tout c'est bien passé !");
         return new RedirectView("/thymeleaf/artists/" + albumDTO.getArtistId().toString());
     }
 }

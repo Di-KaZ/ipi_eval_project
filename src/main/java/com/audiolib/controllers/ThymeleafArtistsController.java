@@ -77,10 +77,10 @@ public class ThymeleafArtistsController {
         try {
             artistService.delete(artistDTO.getId());
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "La supression n'a pas réussi !");
+            redirectAttributes.addFlashAttribute("message",
+                    String.format("La supression de \"%s\" n'a pas réussi !", artistDTO.getName()));
             // redirection sur l'artiste d'ou vien l'album
             new RedirectView("/thymeleaf/artists?page=0&size=10&sortProperty=name&sortDirection=ASC");
-
         }
         redirectAttributes.addFlashAttribute("message", "La supression a réussi !");
         // redirection sur l'artiste d'ou vien l'album
@@ -88,13 +88,14 @@ public class ThymeleafArtistsController {
     }
 
     @PostMapping(value = "add_artists")
-    public RedirectView createSaveArtist(ArtistDTO artistDTO, final ModelMap model) {
+    public RedirectView createSaveArtist(ArtistDTO artistDTO, RedirectAttributes redirectAttributes) {
         Artist artist = artistService.create(artistDTO);
         if (artist == null) {
-            model.put("message", String.format("Nom d'artiste %s invalide/Déjà existant", artistDTO.getName()));
+            redirectAttributes.addFlashAttribute("message",
+                    String.format("Nom d'artiste %s invalide/Déjà existant", artistDTO.getName()));
             return new RedirectView("/thymeleaf/artists/" + artistDTO.getId().toString());
         }
-        model.put("artist", artist);
+        redirectAttributes.addFlashAttribute("message", "Votre nouvel artiste a été crée !");
         return new RedirectView("/thymeleaf/artists/" + artist.getId().toString());
     }
 }
