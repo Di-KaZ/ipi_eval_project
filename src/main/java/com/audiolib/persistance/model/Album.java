@@ -1,4 +1,5 @@
 package com.audiolib.persistance.model;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,15 +11,15 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Album {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="AlbumId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "AlbumId")
     private Long id;
 
-    @Column(name = "Title")
+    @Column(name = "Title", nullable = false) // nullable permet de gerer les erreur si le title est vide
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "ArtistId", nullable=false)
+    @JoinColumn(name = "ArtistId", nullable = false)
     Artist artist;
 
     public Long getId() {
